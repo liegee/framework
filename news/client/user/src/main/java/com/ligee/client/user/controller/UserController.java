@@ -19,7 +19,6 @@ import javax.validation.Valid;
  * Author: 李杰
  * Date: 2018/12/7 6:17 PM
  */
-@RequestMapping("user")
 @RestController
 public class UserController extends BaseController {
 

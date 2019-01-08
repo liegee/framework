@@ -38,8 +38,8 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
             if (!StringUtils.hasText(encryptProperties.getKey())) {
                 throw new NullPointerException("请配置api.encrypt.key");
             }
-            String result =  AesEncryptUtils.aesEncrypt(content, encryptProperties.getKey());
-            return result;
+            System.out.println("--------EncryptResponseBodyAdvice------->>" + content);
+            return AesEncryptUtils.aesEncrypt(content, encryptProperties.getKey());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("加密失败！");

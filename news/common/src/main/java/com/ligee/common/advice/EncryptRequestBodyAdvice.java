@@ -48,8 +48,8 @@ class DecryptHttpInputMessage implements HttpInputMessage {
     public DecryptHttpInputMessage(HttpInputMessage inputMessage, String key, String charset) throws Exception {
         this.headers = inputMessage.getHeaders();
         String content = IOUtils.toString(inputMessage.getBody(), charset);
-        String descryptContent = AesEncryptUtils.aesDecrypt(content,key);
-        this.body = IOUtils.toInputStream(descryptContent, charset);
+        String decryptContent = AesEncryptUtils.aesDecrypt(content, key);
+        this.body = IOUtils.toInputStream(decryptContent, charset);
     }
 
     @Override

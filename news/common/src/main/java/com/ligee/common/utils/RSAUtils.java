@@ -59,8 +59,7 @@ public class RSAUtils {
         //通过X509编码的Key指令获得公钥对象
         KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(Base64.decodeBase64(publicKey));
-        RSAPublicKey key = (RSAPublicKey) keyFactory.generatePublic(x509KeySpec);
-        return key;
+        return (RSAPublicKey) keyFactory.generatePublic(x509KeySpec);
     }
 
     /**
@@ -72,8 +71,7 @@ public class RSAUtils {
         //通过PKCS#8编码的Key指令获得私钥对象
         KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(Base64.decodeBase64(privateKey));
-        RSAPrivateKey key = (RSAPrivateKey) keyFactory.generatePrivate(pkcs8KeySpec);
-        return key;
+        return (RSAPrivateKey) keyFactory.generatePrivate(pkcs8KeySpec);
     }
 
     /**
@@ -84,44 +82,8 @@ public class RSAUtils {
      */
     public static String publicEncrypt(String data, RSAPublicKey publicKey){
         try{
-            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            Cipher cipher = getCipher(Cipher.ENCRYPT_MODE, publicKey);
             return Base64.encodeBase64String(rsaSplitCodec(cipher, Cipher.ENCRYPT_MODE, data.getBytes(CHARSET), publicKey.getModulus().bitLength()));
-        }catch(Exception e){
-            throw new RuntimeException("加密字符串[" + data + "]时遇到异常", e);
-        }
-    }
-
-    /**
-     * 私钥解密
-     * @param data
-     * @param privateKey
-     * @return
-     */
-
-    public static String privateDecrypt(String data, RSAPrivateKey privateKey){
-        try{
-            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            return new String(rsaSplitCodec(cipher, Cipher.DECRYPT_MODE, Base64.decodeBase64(data), privateKey.getModulus().bitLength()), CHARSET);
-        }catch(Exception e){
-            e.printStackTrace();
-            throw new RuntimeException("解密字符串[" + data + "]时遇到异常", e);
-        }
-    }
-
-    /**
-     * 私钥加密
-     * @param data
-     * @param privateKey
-     * @return
-     */
-
-    public static String privateEncrypt(String data, RSAPrivateKey privateKey){
-        try{
-            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
-            cipher.init(Cipher.ENCRYPT_MODE, privateKey);
-            return Base64.encodeBase64String(rsaSplitCodec(cipher, Cipher.ENCRYPT_MODE, data.getBytes(CHARSET), privateKey.getModulus().bitLength()));
         }catch(Exception e){
             throw new RuntimeException("加密字符串[" + data + "]时遇到异常", e);
         }
@@ -136,12 +98,56 @@ public class RSAUtils {
 
     public static String publicDecrypt(String data, RSAPublicKey publicKey){
         try{
-            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
-            cipher.init(Cipher.DECRYPT_MODE, publicKey);
+            Cipher cipher = getCipher(Cipher.DECRYPT_MODE, publicKey);
             return new String(rsaSplitCodec(cipher, Cipher.DECRYPT_MODE, Base64.decodeBase64(data), publicKey.getModulus().bitLength()), CHARSET);
         }catch(Exception e){
             throw new RuntimeException("解密字符串[" + data + "]时遇到异常", e);
         }
+    }
+
+    /**
+     * 私钥加密
+     * @param data
+     * @param privateKey
+     * @return
+     */
+
+    public static String privateEncrypt(String data, RSAPrivateKey privateKey){
+        try{
+            Cipher cipher = getCipher(Cipher.ENCRYPT_MODE, privateKey);
+            return Base64.encodeBase64String(rsaSplitCodec(cipher, Cipher.ENCRYPT_MODE, data.getBytes(CHARSET), privateKey.getModulus().bitLength()));
+        }catch(Exception e){
+            throw new RuntimeException("加密字符串[" + data + "]时遇到异常", e);
+        }
+    }
+
+    /**
+     * 私钥解密
+     * @param data
+     * @param privateKey
+     * @return
+     */
+    public static String privateDecrypt(String data, RSAPrivateKey privateKey){
+        try{
+            Cipher cipher = getCipher(Cipher.DECRYPT_MODE, privateKey);
+            return new String(rsaSplitCodec(cipher, Cipher.DECRYPT_MODE, Base64.decodeBase64(data), privateKey.getModulus().bitLength()), CHARSET);
+        }catch(Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("解密字符串[" + data + "]时遇到异常", e);
+        }
+    }
+
+    /**
+     * 初始化 cipher
+     * @param var1
+     * @param var2
+     * @return
+     * @throws Exception
+     */
+    private static Cipher getCipher(int var1, Key var2) throws Exception{
+            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
+            cipher.init(var1, var2);
+            return cipher;
     }
 
     private static byte[] rsaSplitCodec(Cipher cipher, int opmode, byte[] datas, int keySize){

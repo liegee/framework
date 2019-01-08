@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,9 +62,8 @@ public class ApiFilter extends ZuulFilter {
             request.setCharacterEncoding("UTF-8");
             response.setHeader("Content-type","text/html;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
-            Map<String,List<String>> params = new HashMap<>();
             String url = request.getRequestURI();
-            //这两种情况无需签名
+            // 这两种情况无需签名
             if (url.contains("encrypt") || url.contains("error")) {
                 return null;
             }
@@ -74,11 +74,11 @@ public class ApiFilter extends ZuulFilter {
             String sign = MessageDigestUtils.encrypt(urlBuilder.toString() + salt, Algorithm.MD5);
             String signature = request.getHeader("signature");
             if (sign != null && sign.equals(signature)) {
-                //开放接口和隐私接口 open
+                // 开放接口和隐私接口 open
                 if(url.contains("/close/")){
 //                    redis.set(token,userId);
 //                    String token = request.getHeader("token");
-////                    String userId = redis.get(token)+"";
+//                    String userId = redis.get(token)+"";
 //                    if(StringUtils.isEmpty(userId)){
 //                        response.getWriter().print(AesEncryptUtils.aesEncrypt(JSON.toJSONString(SingleResult.buildFailure(Code.NO_PERMISSION, "token is error")),salt));
 //                        response.getWriter().close();
@@ -88,9 +88,10 @@ public class ApiFilter extends ZuulFilter {
                 }
                 return null;
             } else {
-                //签名错误
-                response.getWriter().print(AesEncryptUtils.aesEncrypt(JSON.toJSONString(SingleResult.buildFailure(Code.NO_PERMISSION, "签名错误")),salt));
-                response.getWriter().close();
+                RequestContext currentContext = RequestContext.getCurrentContext();
+                currentContext.setSendZuulResponse(false);
+                currentContext.setResponseStatusCode(200);
+                currentContext.setResponseBody(AesEncryptUtils.aesEncrypt(JSON.toJSONString(SingleResult.buildFailure(Code.NO_PERMISSION, "签名错误")), salt));
                 return null;
             }
         }catch (Exception e){

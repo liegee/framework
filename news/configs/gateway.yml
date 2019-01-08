@@ -8,16 +8,16 @@ spring:
 zuul:
   routes:
     api-index:
-      path: /api/index/**
+      path: /index/api/**
       serviceId: index
     api-comment:
-      path: /api/comment/**
+      path: /comment/api/**
       serviceId: comment
     api-user:
-      path: /api/user/**
+      path: /user/api/**
       serviceId: user
     api-article:
-      path: /api/article/**
+      path: /article/api/**
       serviceId: article
   host:
     connect-timeout-millis: 60000
