@@ -52,7 +52,7 @@ public class UserServiceImpl extends BaseService implements UserService {
      */
     @Override
     public SingleResult<TokenResponse> register(RegisterRequest request){
-        UserBean user = userMapper.selectUser(request.getMobile());
+        UserBean user = userMapper.findUserByMobile(request.getMobile());
         if(!ObjectUtils.isEmpty(user)){
             return SingleResult.buildFailure(Code.ERROR, ResultMessage.PHONEHASREGISTER);
         }else {

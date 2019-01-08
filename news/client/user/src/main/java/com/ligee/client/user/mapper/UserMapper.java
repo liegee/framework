@@ -19,7 +19,7 @@ public interface UserMapper {
     UserBean selectUser(@Param("mobile") String mobile, @Param("password") String password);
 
     @Select("select id,mobile,password from news_user where mobile = #{mobile}")
-    UserBean selectUser(String mobile);
+    UserBean findUserByMobile(String mobile);
 
     @Insert("insert into news_user(gmt_create, gmt_modified, mobile, password) values(now(), now(), #{mobile}, #{password})")
     int insertUser(UserBean userBean);
