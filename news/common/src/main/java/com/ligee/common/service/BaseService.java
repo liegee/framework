@@ -24,7 +24,7 @@ public abstract class BaseService {
      * @param password
      * @return
      */
-    protected String getToken(String mobile,String password){
-        return MessageDigestUtils.encrypt(mobile+password, Algorithm.SHA1);
+    protected String getToken(String mobile, String password){
+        return MessageDigestUtils.encrypt(mobile.concat(password), Algorithm.SHA1);
     }
 }

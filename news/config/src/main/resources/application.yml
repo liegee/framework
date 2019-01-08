@@ -10,7 +10,7 @@ spring:
       server:
         git:
           uri: https://github.com/liegee/framework #配置git仓库地址
-          searchPaths: configs #配置仓库路径
+          searchPaths: news/configs #配置仓库路径
           username: 421670692@qq.com #访问git仓库的用户名
           password: 123lyywlu #访问git仓库的用户密码
       label: master #配置仓库的分支

@@ -13,8 +13,12 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class Redis {
 
-    @Autowired
     private StringRedisTemplate template;
+
+    @Autowired
+    public Redis(StringRedisTemplate template){
+        this.template = template;
+    }
 
     /**
      * expire为过期时间，秒为单位

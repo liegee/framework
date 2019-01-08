@@ -36,7 +36,7 @@ public class SingleResult<T> extends Result {
      * @return
      */
     public static <T> SingleResult<T> buildSuccess(Code code, String message) {
-        SingleResult result = new SingleResult();
+        SingleResult<T> result = new SingleResult<>();
         result.setCode(code);
         result.setMessage(message);
         return result;
@@ -71,7 +71,7 @@ public class SingleResult<T> extends Result {
      * @return
      */
     public static <T> SingleResult<T> buildSuccessWithMessage(String message) {
-        SingleResult result = new SingleResult();
+        SingleResult<T> result = new SingleResult<>();
         result.setCode(Code.SUCCESS);
         result.setMessage(message);
         return result;
@@ -84,10 +84,9 @@ public class SingleResult<T> extends Result {
      * @return
      */
     public static <T> SingleResult<T> buildFailure(Code code, String message) {
-        SingleResult result = new SingleResult();
+        SingleResult<T> result = new SingleResult<>();
         result.setCode(code);
         result.setMessage(message);
-        result.setData("");
         return result;
     }
 
@@ -98,7 +97,7 @@ public class SingleResult<T> extends Result {
      * @return
      */
     public static <T> SingleResult<T> buildFailure() {
-        SingleResult result = new SingleResult();
+        SingleResult<T> result = new SingleResult<>();
         result.setCode(Code.ERROR);
         return result;
     }
