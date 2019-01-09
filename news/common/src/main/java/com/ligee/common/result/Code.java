@@ -7,13 +7,15 @@ package com.ligee.common.result;
 public enum Code {
 
     /**
-     * 请求失败
-     */
-    ERROR(0,"请求失败"),
-    /**
      * 请求成功
      */
-    SUCCESS(1,"请求成功"),
+    SUCCESS(0,"请求成功"),
+
+    /**
+     * 请求失败
+     */
+    ERROR(1000,"请求失败"),
+
     /**
      * 请重新登录
      */

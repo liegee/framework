@@ -10,4 +10,6 @@ public class ResultMessage {
     public static final String PHONEHASREGISTER = "该手机号已经注册！";
     public static final String REGISTERSUCCESS = "注册成功！";
     public static final String REGISTERFAILURE = "注册失败！";
+    public static final String SIGNATUREERROR = "签名错误！";
+    public static final String REQUESTERROR = "请求request有误！";
 }

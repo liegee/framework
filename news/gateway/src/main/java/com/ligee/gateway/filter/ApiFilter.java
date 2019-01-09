@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ligee.common.encryption.Algorithm;
 import com.ligee.common.encryption.MessageDigestUtils;
 import com.ligee.common.result.Code;
+import com.ligee.common.result.ResultMessage;
 import com.ligee.common.result.SingleResult;
 import com.ligee.common.utils.AesEncryptUtils;
 import com.netflix.zuul.ZuulFilter;
@@ -54,7 +55,7 @@ public class ApiFilter extends ZuulFilter {
 
     @Override
     public Object run() {
-        //这里写校验代码
+        // 这里写校验代码
         RequestContext context = RequestContext.getCurrentContext();
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
@@ -69,6 +70,11 @@ public class ApiFilter extends ZuulFilter {
             }
             StringBuilder urlBuilder = getUrlAuthenticationApi(request);
             if (StringUtils.isEmpty(urlBuilder)) {
+                context.setSendZuulResponse(false);
+                context.setResponseStatusCode(200);
+                context.setResponseBody(AesEncryptUtils.
+                        aesEncrypt(JSON.toJSONString(SingleResult.
+                                buildFailure(Code.ERROR, ResultMessage.REQUESTERROR)), salt));
                 return null;
             }
             String sign = MessageDigestUtils.encrypt(urlBuilder.toString() + salt, Algorithm.MD5);
@@ -88,10 +94,11 @@ public class ApiFilter extends ZuulFilter {
                 }
                 return null;
             } else {
-                RequestContext currentContext = RequestContext.getCurrentContext();
-                currentContext.setSendZuulResponse(false);
-                currentContext.setResponseStatusCode(200);
-                currentContext.setResponseBody(AesEncryptUtils.aesEncrypt(JSON.toJSONString(SingleResult.buildFailure(Code.NO_PERMISSION, "签名错误")), salt));
+                context.setSendZuulResponse(false);
+                context.setResponseStatusCode(200);
+                context.setResponseBody(AesEncryptUtils.
+                        aesEncrypt(JSON.toJSONString(SingleResult.
+                                buildFailure(Code.NO_PERMISSION, ResultMessage.SIGNATUREERROR)), salt));
                 return null;
             }
         }catch (Exception e){
@@ -100,6 +107,12 @@ public class ApiFilter extends ZuulFilter {
         return null;
     }
 
+    /**
+     * 解密、组合请求
+     * @param request
+     * @return
+     * @throws Exception
+     */
     private StringBuilder getUrlAuthenticationApi(HttpServletRequest request)throws Exception {
         String requestBodyStr;
         try {
@@ -110,7 +123,7 @@ public class ApiFilter extends ZuulFilter {
         if (StringUtils.isEmpty(requestBodyStr)) {
             return null;
         }
-        requestBodyStr = AesEncryptUtils.aesDecrypt(requestBodyStr,salt);
+        requestBodyStr = AesEncryptUtils.aesDecrypt(requestBodyStr, salt);
         JSONObject requestBodyJson = JSON.parseObject(requestBodyStr);
         List<String> nameList = new ArrayList<>();
         nameList.add("token");
@@ -133,6 +146,12 @@ public class ApiFilter extends ZuulFilter {
         return urlBuilder;
     }
 
+    /**
+     * 获取请求request中的内容
+     * @param request
+     * @return
+     * @throws IOException
+     */
     public static String requestBody(HttpServletRequest request) throws IOException {
         // 读取请求内容
         BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream(),"UTF-8"));
